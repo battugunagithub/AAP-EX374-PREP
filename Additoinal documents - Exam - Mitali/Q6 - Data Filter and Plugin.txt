@@ -1,0 +1,21 @@
+copy ansible.cfg, inventory from previous
+
+vim create_users.yml
+---
+- name: create remote users
+  hosts: all
+  become: yes
+  vars_files:
+    user_list.yml
+  tasks:
+   - name:  create users
+     vars:
+       password: “{{ lookup(‘password’, ‘filename-’ + item.name + ‘ length=6 chars=digits’) }}
+     ansible.builtin.user:
+       name: “{{ item.name }}”
+       uid: “{{ item.uid }}”
+       state: present
+       password: {{ password | password_hash(’sha512’) }}
+       update_password: on_create
+       comment: “{{ item.first | capitalize }} {{ item.middle | capitalize }} {{ item.last | capitalize }}”
+     loop: “{{ users }}”

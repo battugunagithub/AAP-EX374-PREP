@@ -1,0 +1,43 @@
+
+Git is not installed by default in exam. We need to install Git and then proceed with the Git config.
+
+
+# rpm -q git
+# sudo yum install git -y
+# rpm qi git
+
+# git config --global user.name "student"
+# git config --global user.email "student@lab.example.com"
+# git config --global push.default simple
+# git config --global -l
+# cat ~/.gitconfig
+[user]
+	name = student
+	email = student@lab.example.com
+[push]
+	default = simple
+#
+
+In the exam, they would provide the git url and clone the projects for each question.
+Clone each project and perform the task and finally push the changes to git origin
+
+vim .gitignore
+.ssh/
+ansible-navigator.log
+*-artifact-*
+
+git add .
+git push
+git commit
+
+===================================
+
+To configure auto indentation
+
+# vi ~/.vimrc
+# cat ~/.vimrc
+set ai cuc ts=2
+# source ~/.vimrc
+#
+
+====================================

@@ -1,0 +1,28 @@
+cd /home/matthew
+git clone <git url>
+cd tag-project
+
+vim tags.yml
+---
+- name: Ensure selected task executed
+  hosts: dev
+  become: yes
+  tasks:
+    - name: first tag task
+      ansible.builtin.copy:
+    	  content: "que, sara sara"
+    	  dest: /var/www/html/index.html
+      tags: [ never, alpha ]
+    - name: second tag task
+      ansible.builtin.copy:
+    	  content: "what ever, will be will be"
+    	  dest: /var/www/html/index.html
+  	  tags: [ never, beta ]
+ 
+ansible-navigator run tags.yml -t alpha/beta --eei ee-supported-rhel8:latest --pp missing -m stdout 
+ansible-navigator run tags.yml --eei ee-supported-rhel8:latest --pp missing -m stdout
+
+git add .
+git commit -m 'selected task executed'
+git push
+cd ..

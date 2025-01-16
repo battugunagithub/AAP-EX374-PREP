@@ -1,0 +1,99 @@
+Q11. Run playbook in an execution environment (created in 10 ques)by script.
+a.
+Git project need to clone.
+b.
+A config file and dynamic inventory script there.
+c.
+Create playbook with copy content task and run using above eei.
+d.
+Push to git.
+(page no =181)
+
+
+# lab start inventory-dynamic
+Starting lab:
+--
+--
+Starting exercise: success
+
+# cd inventory-dynamic/
+# ls
+ansible.cfg  ansible-navigator.yml  hosts inventorya.py inventoryw.py
+# mkdir inventory
+# mv inventory*.py inventory/
+# mv hosts inventory/
+# ls inventory/
+hosts inventorya.py inventoryw.py
+# chmod +x inventory/inventory*.py
+# ls -ltr inventory/
+# mkdir -p run-playbook-ee-dynamic
+# cd run-playbook-ee-dynamic
+# pwd
+/home/student/EX374/run-playbook-ee-dynamic
+# cp -pr ~/inventory-dynamic/inventory .
+# ls inventory/
+inventorya.py
+inventoryw.py
+hosts
+# cat inventory/hosts
+[servers:children]
+webservers
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  execution-environment:
+    image: hub.lab.example.com/custom-ee-rhel-user-ca:v1.0
+    pull:
+      policy: missing
+  mode: stdout
+  logging: 
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+# vim ansible.cfg
+[defaults]
+inventory=inventory
+remote_user=student
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+
+[galaxy]
+server_list = published_repo
+
+[galaxy_server.published_repo]
+url=https://hub.lab.example.com/api/galaxy/content/published/
+token=2390sd90d8786ds900f8xc77
+#
+
+# ansible-navigator inventory -i inventory/inventorya.py --graph webservers
+
+# ansible-navigator inventory -i inventory --graph
+
+# vim copy-playbook.yml
+---
+- name: copy content to the servers
+  hosts: webservers
+  tasks:
+    - name: copy content to the dynamic inventory servers
+      ansible.builtin.copy:
+      content: "hello world by copy playbook using dynamic inventory"
+      dest: /etc/motd.d/banner
+# vim script.sh
+ansible-navigator run copy-playbook.yml --eeei hub.lab.example.com/custom-ee-rhel-user-ca:v1.0 -i inventory --pp missing -m stdout
+
+# chmod +x script.sh
+# ls -ld script.sh
+# 
+# ssh script.sh
+
+In order to check syntax of the playbook
+
+# ansible-galaxy run copy-playbook.yml --eei hub.lab.example.com/custom-ee-rhel-user-ca:v1.0 --pp missing -m stdout --syntax-check
+
+# ansible-galaxy run copy-playbook.yml --eei hub.lab.example.com/custom-ee-rhel-user-ca:v1.0 --pp missing -m stdout --check -v
+
+# 

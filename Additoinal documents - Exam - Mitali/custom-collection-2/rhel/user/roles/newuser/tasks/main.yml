@@ -1,0 +1,6 @@
+---
+# tasks file for newuser
+- name: copy user.conf to /tmp of servera
+  ansible.builtin.copy:
+    src: files/user.conf
+    dest: /tmp

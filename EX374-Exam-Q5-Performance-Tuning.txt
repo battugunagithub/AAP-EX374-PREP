@@ -1,0 +1,49 @@
+Q5. Tune ansible configuration file.
+pull git project from http://git.lab.example.com:8081/git/fork-project.git
+modify ansible.cfg file with parallelization size is 45 and gather facts no.
+push to git server.
+================================
+
+# mkdir -p performance-tuning
+# cd performance-tuning
+# pwd
+/home/student/EX374/performance-tuning
+# vim ansible.cfg
+[defaults]
+remote_user=student
+forks=45
+gathering=explicit
+#
+
+# podman login hub.lab.example.com -u student -p redhat123
+Login Succeeded!
+#
+# ls
+ansible.cfg
+# 
+# ansible-navigator --eei hub.lab.example.com/ee-supported-rhel8:latest --pp missing -m interactive
+:config
+
+:f forks
+
+Name			Default		Source 							Current
+0 Default forks   	False		/home/student/EX374/performance-tuning/ansible.cfg	45
+
+esc to go back 
+
+:f gathering
+
+0 Default gathering	False		/home/student/EX374/performance-tuning/ansible.cfg	explicit
+
+:q or esc to go back to command prompt
+
+Note: Alternatively you can use the below command to validate forks and gathering values
+
+# ansible-navigator config dump --eei hub.lab.example.com/ee-supported-rhel8:latest --pp missing -m stdout
+
+once you enter the above command just type "forks" and it shows both the modified values as per ansible.cfg file
+
+Default forks
+Default gathering
+
+#  

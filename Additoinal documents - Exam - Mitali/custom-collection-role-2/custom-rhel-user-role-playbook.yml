@@ -1,0 +1,5 @@
+---
+- name:
+  hosts: servera.lab.example.com
+  roles: 
+    - name: rhel.user.newuser

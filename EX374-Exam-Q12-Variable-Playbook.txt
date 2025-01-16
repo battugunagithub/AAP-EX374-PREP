@@ -1,0 +1,67 @@
+Q12. Run a variable playbook.
+a.
+Clone project from git url.
+b.
+Config file dynamic inventory script available.
+c.
+Create a playbook which copy content from CONTENT variable to a FILE and file is inside DIRECTORY variable.
+
+
+# mkdir -p /home/student/EX374/variable-playbook
+# cd /home/student/EX374/variable-playbook
+# pwd
+/home/student/EX374/variable-playbook
+# cp -pr ../run-playbook-ee-dynamic/inventory /home/student/EX374/variable-playbook/
+# chmod +x inventory/inventory*.py
+# ls -ltr inventory/
+# ls -ld inventorya.py
+# vim ansible.cfg
+[defaults]
+inventory=inventory
+remote_user=student
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+#
+
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  execution-environment:
+    image: hub.lab.example.com/custom-ee-python:v1.0
+    pull:
+      policy: missing
+  mode: stdout
+  logging:
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+# 
+# vim variable-playbook.yml
+---
+- name: copy content from variable playbook
+  hosts: testing
+  gather_facts: true
+  
+  tasks:
+    - name: this is to copy content to testing servers
+      ansible.builtin.copy:
+        content: "{{ CONTENT }}"
+        dest: "{{ DIRECTORY }}/{{ FILE }}"
+# 
+# ansible-navigator inventory -i inventory/inventorya.py --graph
+# 
+
+Check if you have the file exist /etc/motd.d/banner on testing group i.e. servera.lab.example.com 
+
+# ssh servera "cat /etc/motd.d/banner"
+# 
+
+# ansible-navigator run variable-playbook.yml -i inventory/inventorya.py -e "CONTENT='sample content from variable playbook \n' DIRECTORY=/etc/motd.d FILE=banner" --syntax-check
+
+# ansible-navigator run variable-playbook.yml -i inventory/inventorya.py -e "CONTENT='sample content from variable playbook \n' DIRECTORY=/etc/motd.d FILE=banner" --check -vv
+l
+# ansible-navigator run variable-playbook.yml -i inventory/inventorya.py -e "CONTENT='sample content from variable playbook \n' DIRECTORY=/etc/motd.d FILE=banner"

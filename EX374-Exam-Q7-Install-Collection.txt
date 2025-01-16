@@ -1,0 +1,54 @@
+# mkdir -p mycollection
+# cd my collection
+# pwd
+/home/student/EX374/mycollection
+# vim ansible.cfg
+[defaults]
+remote_user=student
+# 
+
+Update ansible.cfg getting details of repo from hub
+
+# vim ansible.cfg
+[defaults]
+remote_user=student
+
+collections_paths=./mycollection:/usr/share/ansible/collections
+
+[galaxy]
+server_list=rh-certified_repo
+
+[galaxy_server.rh-certified_repo]
+url=https://hub.lab.example.com/api/galaxy/content/rh-certified/
+token=9623rojjhsdf00949909802321122432dsd88
+#
+
+# rpm -q ansible-galaxy
+
+if not installed already, install ansible-galaxy.. It might be exist in ansible-core package
+
+# which ansible-galaxy
+/bin/ansible-galaxy
+# 
+
+# rpm -qf /bin/ansible-galaxy
+ansible-core-2.13.4-2.el8ap.x86_64
+#
+# podman login hub.lab.example.com -u student -p redhat123
+Login Succeeded!
+# 
+# ansible-galaxy collection install ansible.netcommon -p mycollection
+---
+---
+---
+ansible.utils:2.8.0 was installed successfully
+#
+# ansible-galaxy collection list
+
+Collection		Version
+----------------------------------
+ansible.netcommon	4.1.0
+ansible.utils		2.8.0
+---
+---
+# 

@@ -1,0 +1,9 @@
+git clone <git repo>
+cd performance-tune
+
+vim ansible.cfg
+[defaults]
+inventory=inventory
+remote_user=matthew
+forks=30
+gathering=explicit

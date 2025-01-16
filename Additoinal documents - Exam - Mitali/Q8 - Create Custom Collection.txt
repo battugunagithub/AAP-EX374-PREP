@@ -1,0 +1,19 @@
+a.  #cd /home/matthew/customcollection
+   ansible.cfg inventory user.conf  tasks_main.yml
+b.  #ansible-galaxy collection init rhel.user
+c.  #cd /home/matthew/customcollections/rhel/user/
+d.  #mkdir meta
+e.  #cat meta/runtime.yml
+---
+requires_ansible: '>=2.9.10'
+f.cd roles/
+g. ansible-galaxy init newuser
+h. cp ~/customcollection/tasks_main.yml newuser/tasks/main.yml
+i. cp ~/customcollection/user.conf  ~/customcollection/rhel/user/roles/newuser/files/
+j. cd /home/student/customcollections/rhel/user/
+  rm -vr docs roles/newuser/{defaults,templates,handlers,tests,vars}
+k. ansible-galaxy collection build
+l.  Copy generated tar file to /home/matthew/customcollection/ and publish to automation hub.
+or
+ Cli command to publish: ansible-galaxy collection publish -v rhel-user-1.0.0.tar.gz
+ m.  Approve after publish.

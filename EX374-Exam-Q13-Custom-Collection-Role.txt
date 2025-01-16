@@ -1,0 +1,112 @@
+Q13. Use custom collection role. 
+
+	Clone git project from url. 
+	Config file and dynamic inventory. 
+	Use custom role from rhel.user collection in a playbook
+
+
+# lab start inventory-dynamic
+Starting lab:
+--
+--
+Starting exercise: success
+
+# cd inventory-dynamic/
+# ls
+ansible.cfg  ansible-navigator.yml  hosts inventorya.py inventoryw.py
+# mkdir inventory
+# mv inventory*.py inventory/
+# mv hosts inventory/
+# ls inventory/
+hosts inventorya.py inventoryw.py
+# chmod +x inventory/inventory*.py
+# ls -ltr inventory/
+# mkdir -p ../EX374/custom-collection-role/
+# cp -pr inventory ../EX374/custom-collection-role/
+# cd ../EX374/custom-collection-role/
+# pwd
+/home/student/EX374/custom-collection-role
+
+Make sure inventorya.py and inventoryw.py inside inventory directory has execute permissions
+
+# ls -ltr inventory/
+hosts inventorya.py inventoryw.py
+# vim ansible.cfg
+[defaults]
+inventory=./inventory
+remote_user=student
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+
+[galaxy]
+server_list = published_repo
+
+[galaxy_server.published_repo]
+url=https://hub.lab.example.com/api/galaxy/content/published/
+token=3203klsakdjf0923klkkkk23332408
+
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  ansible:
+    config:
+      path: ./ansible.cfg
+  execution-environment: 
+    image: hub.lab.example.com/custom-ee-rhel-user-ca:v1.0
+    pull:
+      policy: missing
+  mode: stdout
+  logging:
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+# vim rhel-user-mymotd.yml
+---
+- name: test mymotd role from rhel.user custom collection
+  hosts: webservers
+  gather_facts: true
+  roles:
+    - rhel.user.mymotd
+# 
+# ls inventory/
+# cat inventory/hosts
+[webservers]
+
+[servers: children]
+webservers
+# ansible-navigator inventory -i inventory/inventorya.py --graph
+@all:
+  |--@ungrouped:
+  |--@webservers:
+  |  |--servera.lab.example.com
+# ansible-navigator inventory -i inventory/inventoryw.py --graph
+@all:
+  |--@ungrouped:
+  |  |--workstation.lab.example.com
+#
+# ansible-navigator run rhel-user-mymotd.yml --syntax-check
+playbook: /home/student/EX374/custom-collectio-role/rhel-user-mymotd.yml
+# 
+
+Dry-Run
+# ansible-navigator run rhel-user-mymotd.yml --check -v
+
+Actual-Run
+# ansible-navigator run rhel-user-mymotd.yml -v
+
+Now login to servera and observe that mymotd is updated (banner)
+
+# ssh servera
+Welcome to servera
+Managed by ansible on 2024-12-26
+--
+--
+# cat /etc/motd
+Welcome to servera
+Managed by ansible on 2024-12-26
+# 
+

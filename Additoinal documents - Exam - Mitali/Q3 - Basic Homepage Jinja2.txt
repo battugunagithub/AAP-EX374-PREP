@@ -1,0 +1,26 @@
+git clone 
+cd /home/matthew/web_install
+
+vim apache-setup.yml
+---
+hosts: dev
+become: yes
+gather_facts: false
+- name: Generate a basic homepage from jinja2 template
+  ansible.builtin.copy:
+    src: alias.conf
+    dest: /etc/httpd/conf/
+  notify: restart apache 
+handlers:
+	- name: restart apache
+  	ansible.builtin.service:
+      name: httpd
+      state: restarted
+    
+podman images
+ansible-navigator run	 apache-setup.yml -m stdout --eei ee-supported-rhel8:latest --pp missing
+
+cp ~/create_user/.gitignore . 
+git add  --all
+git commit -m 'notify triggered for action'
+git push

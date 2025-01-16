@@ -1,0 +1,2 @@
+Create an Ansible automation controller execution environment named EX374 custom user execution environment that uses the hub.realm10.example.com/ee-user-supported:2.0 execution environment. 
+The execution environment should download the image if not present before running. 

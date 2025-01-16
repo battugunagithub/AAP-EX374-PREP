@@ -1,0 +1,30 @@
+git clone <git url>
+cd /home/matthew/create_user/
+podman login -u admin(given) -p mishings(given) hub.lab17.example.com
+
+vim inventory
+[dev]
+servera
+serverc(add)
+[prod]
+serverb
+
+vim user_list.yml
+	---
+  developer:
+   	- stave
+   	- matt 
+  	- vision
+    - bob
+    - sally
+
+ansible-navigator run create_user.yml -m stdout --eei ee-supported-rhel8:latest
+
+vim .gitignore
+.ssh/
+ansible-navigator.log
+*-artifact-*
+
+git add .
+git push
+git commit

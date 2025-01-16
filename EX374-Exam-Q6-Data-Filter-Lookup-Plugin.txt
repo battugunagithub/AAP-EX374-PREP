@@ -1,0 +1,151 @@
+Q6. Create users.clone the project from <git server>
+already having a user_list.yaml file with content
+create a playbook create_user.yaml which will create the users with
+the following details.
+a). users will be created with the name and proper uid.
+b). in the GECOS part it will be 'firstname middlename lastname' and
+the first letter should be capital.(eg John Micheal Bobby).
+c). for every user it should create a 6 digit random password with
+SHA512 encryption. the saltvalue of the password will be stored in a
+file filnema-<username> in the directory on which the playbook will
+be executed in the control node
+After done all push to git server.
+
+
+
+# mkdir -p /home/student/EX374/data-filter
+# cd /home/student/EX374/data-filter
+# pwd
+/home/student/EX374/data-filter
+# vim ansible.cfg
+[defaults]
+remote_user=student
+inventory=inventory
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  ansible:
+    config:
+      path: ./ansible.cfg
+  execution-environment:
+    image: hub.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  mode: stdout
+  logging: 
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+#
+
+# vim inventory
+[dev]
+servera.lab.example.com
+serverb.lab.example.com
+#
+
+# cat user_list.yml
+users:
+ - name: bobby
+   first: john
+   middle: micheal
+   last: bobby
+   uid: 1003
+ - name: smith
+   first: steven
+   middle: franklin
+   last: smith
+   uid: 1007
+ - name: warner
+   first: david
+   middle: simon
+   last: warner
+   uid: 1009
+#
+
+There are 3 scenarios of this questions
+
+all 3 should have the sha512 encryption
+
+1. sha512 encryption with salt value in "password-<username>" file
+
+
+# vim create_user.yml
+---
+- name: create users with sha512 encryption stored in password user file
+  hosts: dev
+  become: true
+  gather_fact: true
+  vars_fails:
+    - user_list.yml
+  tasks:
+    - name: creating users on target servers
+      vars:
+        password: "{{ lookup ('ansible.builtin.password', 'password-' + item.name, chars='digits', length=6, encrypt='sha512_crypt') }}
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        state: present
+        password: "{{ password }}" 
+        update_password: on_create
+        comment: "{{ item.first | capitalize }} {{ item.middle | capitalize }} {{ item.last | capitalize }}"   
+      loop:"{{ users }}"  
+#
+
+
+
+2. sha512 encryption with 6 digits in "password-<username>" file
+
+# vim create_user.yml
+---
+- name: create users with sha512 encryption stored in password user file
+  hosts: dev
+  become: true
+  gather_fact: true
+  vars_fails:
+    - user_list.yml
+  tasks:
+    - name: creating users on target servers
+      vars:
+        password: "{{ lookup ('ansible.builtin.password', 'password-' + item.name, chars='digits', length=6 ) }}
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        state: present
+        password: "{{ password | password_hash('sha512') }}" 
+        update_password: on_create
+        comment: "{{ item.first | capitalize }} {{ item.middle | capitalize }} {{ item.last | capitalize }}"   
+      loop:"{{ users }}"  
+#
+
+
+3. sha512 encryption without 6 digits and salt value in "password-<username>" file
+
+# vim create_user.yml
+---
+- name: create users with sha512 encryption stored in password user file
+  hosts: dev
+  become: true
+  gather_fact: true
+  vars_fails:
+    - user_list.yml
+  tasks:
+    - name: creating users on target servers
+      vars:
+        password: "{{ lookup ('ansible.builtin.password', 'password-' + item.name) }}
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        state: present
+        password: "{{ password | password_hash('sha512') }}" 
+        update_password: on_create
+        comment: "{{ item.first | capitalize }} {{ item.middle | capitalize }} {{ item.last | capitalize }}"   
+      loop:"{{ users }}"  
+#

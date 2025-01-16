@@ -1,0 +1,35 @@
+---
+- hosts: dev 
+  name: Install the web server and start it
+  become: true
+  vars:
+    httpd_packages:
+      - httpd
+  tasks:
+    - name: Install the apache web server
+      ansible.builtin.yum:
+        name: "{{ httpd_packages }}"
+        state: present
+    - name: Open the firewalld http port
+      ansible.posix.firewalld:
+        port: 80/tcp
+        permanent: true
+        state: enabled
+      notify: restart firewalld service
+    - name: Generate a basic homepage from alias copy file 
+      ansible.builtin.copy:
+          src: alias.conf
+          dest: /var/www/html/index.html
+          force: yes
+      notify: restart httpd service
+  handlers:
+    - name: restart firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        state: restarted
+        enabled: yes
+    - name: restart httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+        enabled: yes 

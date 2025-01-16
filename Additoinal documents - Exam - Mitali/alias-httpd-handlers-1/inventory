@@ -1,0 +1,4 @@
+[dev]
+server[a:c].lab.example.com
+[prod]
+server[d:f].lab.example.com

@@ -1,0 +1,8 @@
+-	Name: EX374 copy file project
+-	Organization: Default
+-	Credential type: Git
+-	URL: http://git.realm10.example.com/git/master_playbook
+-	Name: EX374 user project
+-	Organization: Default
+-	Credential type: Git
+-	URL: http://git.realm10.example.com/git/master_user 

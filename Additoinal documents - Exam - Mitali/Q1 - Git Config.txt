@@ -1,0 +1,22 @@
+Git configuration
+
+# git config --global user.name "student"
+# git config --global user.email "student@lab.example.com"
+# git config --global push.default simple
+# git config --global -l
+# cat ~/.gitconfig
+[user]
+	name = student
+	email = student@lab.example.com
+[push]
+	default = simple
+#
+
+
+To configure auto indentation
+
+# vi ~/.vimrc
+# cat ~/.vimrc
+set ai cuc ts=2
+# source ~/.vimrc
+#

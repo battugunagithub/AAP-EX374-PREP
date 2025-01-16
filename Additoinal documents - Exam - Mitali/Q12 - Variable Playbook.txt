@@ -1,0 +1,66 @@
+a.  Clone git project in /home/matthew/ directory.
+b.  Provide execute permission to dynamic inventory script. Chmod a+x inventorya.py
+    inventory/inventorya.py --list
+0/p testing node6.lab17.example.com
+c.  Create playbook add copy task with given variable.
+        vim master_playbook.yml
+hosts: node6.lab17.example.com
+become: yes
+garther_facts: false
+Vars:
+ content: “sun comes up goes down” 
+ file:  banner
+ directory: /etc/motd.d/
+  
+tasks:
+name: copy content to index file
+  Copy:
+   Content: “{{ content }}”
+   Dest: “{{ directory}} / {{ file }}”
+ 
+d.  Push to git.
+
+
+
+---
+- name: copying conext using variable playbook
+  hosts: testing
+  gather_fact: true
+  
+  tasks:
+    - name: copy content
+      ansible.builtin.copy:
+        src: "{{ CONTENT }}"
+        dest: "{{DIRECTORY}}/{{FILE}}"
+
+
+===============================================
+
+inventorya.py file for reference.
+
+
+#!/usr/bin/python3
+
+from subprocess import Popen,PIPE
+import sys
+import json
+result = {}
+result['testing'] = {}
+result['testing']['hosts'] = []
+result['testing']['var'] = {}
+
+pipe = Popen(['getent', 'hosts'], stdout=PIPE,universal_newlines=True)
+
+for line in pipe.stdout.readlines():
+    s = line.split()
+    if s[1].startswith('servera'):
+       result['testing']['hosts'].append(s[1])
+
+if len(sys.argv) == 2 and sys.argv[1] == '--list':
+   print(json.dumps(result))
+elfi len(sys.argv) == 3 and sys.argv[1] == '--host':
+   print(json.dumps({}))
+else:
+   print("Requires an argument, please use --list or  --host <host>")
+
+======================================================

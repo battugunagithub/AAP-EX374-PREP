@@ -1,0 +1,99 @@
+Q4. create a tag based playbook.
+playbook name tags.yml pull from
+http://git.lab.example.com:8081/git/tag-project.git.
+Add 'hello' to /var/www/html/index.html in 'dev' host group with tag
+'alpha'.
+Add 'by by' to /var/www/html/index.html in same 'dev' host group
+with tag 'beta'.
+if any tag not given playbook should not execute any task.
+After done everything push to git server.
+=================
+
+# mkdir -p tags-alias-httpd
+# cd tags-alias-httpd
+# pwd
+/home/student/EX374/tags-alias-httpd
+# vim ansible.cfg
+[defaults]
+remote_user=student
+inventory=inventory
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  ansible:
+    config:
+      path: ./ansible.cfg
+  execution-environment:
+    image: hub.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  mode: stdout
+  logging: 
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+#
+
+# vim inventory
+[dev]
+servera.lab.example.com
+serverb.lab.example.com
+#
+
+# ansible-navigator inventory -i inventory --graph dev
+@dev:
+  |--servera.lab.example.com
+  |--serverb.lab.example.com
+#
+
+# vim tags.yml
+---
+- name: playbook using specific tags
+  hosts: dev
+  become: true
+  gather_facts: true
+  tasks:
+    - name: tags fist task
+      ansible.builtin.copy:
+        content: "hello"
+        dest: /var/www/html/index.html
+      tags: [never, alpha]
+    - name: tags second task
+      ansible.builtin.copy:
+        content: "by by"
+        dest: /var/www/html/index.html
+      tags: [never, beta]
+# 
+# ansible-navigator run tags.yml --syntax-check
+# ansible-navigator run tags.yml --check -v
+
+Note: since no tag is specified it will take any action on the target servers
+
+# ansible-navigator run tags.yml -t alpha -v
+#
+# curl servera
+hello
+# ssh servera "sudo cat /var/www/html/index.html"
+hello
+# curl serverb
+hello
+# ssh serverb "sudo cat /var/www/html/index.html"
+hello
+# ansible-navigator run tags.yml -t beta -v
+#
+# curl servera
+by by
+# ss servera "sudo cat /var/www/html/index.html"
+by by
+# curl serverb
+by by
+# ssh serverb "sudo cat /var/www/html/index.html"
+by by
+#

@@ -1,0 +1,9 @@
+-	EX374 static inventory contains the following host groups
+-	Host group development which contains the host node4.realm10.example.com
+-	Host group testing which contains the host 
+-	node6.realm10.example.com
+
+-	EX374 dynamic inventory contains the inventory source EX374 custom source which contains the inventory script inventory.py from project EX374 copy file project
+
+Note that the inventory source is automatically updated before each launch
+Do not create any other resources other than those mentioned above.

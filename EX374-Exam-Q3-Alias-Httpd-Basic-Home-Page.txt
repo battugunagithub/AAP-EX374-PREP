@@ -1,0 +1,96 @@
+Q3. install alias httpd install.clone the project name web_install
+from http://git.lab.example.com:8081/git/alias_httpd.git . there is
+a file alias.conf with some data . playbook was created with copy
+task.
+if the task was executing httpd service should restart if not httpd
+service should not start.
+After exicute playbook push to git server.
+
+# mkdir -p alias-httpd
+# cd alias-httpd
+# pwd
+/home/student/EX374/alias-httpd
+# vim ansible.cfg
+[defaults]
+remote_user=student
+ask_pass=false
+inventory=inventory
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+# 
+# vim ansible-navigator.yml
+---
+	execution-environment:
+	  image: hub.lab.example.com/ee-supported-rhel8:latest
+	  pull:
+	    policy: missing
+	mode: stdout
+	logging:
+	  file: /dev/null
+	playbook-artifact:
+	  enable: false
+#
+# vim inventory
+servera.lab.example.com
+#
+# vim apache_setup.yml
+---
+- name: this is to copy alias conf file to web server and restart the service with handlers
+  hosts: 
+    - servera.lab.example.com
+    - serverb.lab.example.com
+  become: true
+  gather_facts: true
+  tasks:
+    - name: ensure httpd is installed
+      ansible.builtin.yum:
+        name: httpd
+        state: present
+    
+    - name: ensure firewall port is enabled
+      ansible.posix.firewalld:
+        name: 80/tcp
+        permanent: yes
+        state: enabled
+      notify: reload firewalld 
+      
+    - name: copy alis conf file to destination server
+      ansible.builtin.copy:
+        src: alias.conf
+        dest: /var/www/html/index.html
+        force: yes
+      notify: restart httpd service
+  handlers:
+    - name: reload firewalld
+      ansible.builtin.command:
+        cmd: firewall-cmd --reload 
+        
+    - name: restart httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
+        enabled: true
+# vim alias.conf
+This is a first web server has alias conf file content
+#
+# podman login hub.lab.example.com/ee-supported-rhel8:latest
+# podman images
+# ansible-navigator run apache_setup.yml --syntax-check
+# ansible-navigator run apache_setup.yml --check -vv
+# ansible-navigator run apache_setup.yml -vv
+
+if everything is successful, verify it in servera
+# ssh servera
+# cat /var/www/html/index.html
+This is a first web server has alias conf file content
+# curl localhost
+# exit
+
+# curl http://servera.lab.example.com
+This is a first web server has alias conf file content
+# 
+     

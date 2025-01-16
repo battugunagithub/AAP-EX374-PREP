@@ -1,0 +1,13 @@
+---
+version: 1
+build_arg_defaults:
+EE_BASE_IMAGE: 'hub.lab17.example.com/ee-supported-rhel8:2.0'        EE_BUILDER_IMAGE: 'hub.lab17.example.com/ansible-builder-rhel8:2.0' dependencies: 
+ python: requirements.txt
+ system: bindep.txt 
+Vim requirements.txt
+python3-ldap
+Vim bindep.txt
+Python36
+Ansible-builder build -t ee-dynamic-rhel8:v1.0
+Podman tag 
+Podman push

@@ -1,0 +1,129 @@
+# mkdir custom-collection
+# cd custom-collection
+# rpm -qi ansible-galaxy
+# sudo yum install ansible-galaxy -y
+# rpm -qi ansible-galaxy
+# ansible-galaxy collection init rhel.user
+- Collection rhel.user was created successfully
+# ls
+rhel
+# cd rhel/user
+# tree
+rhel/
+--- user
+      -- docs
+      -- galaxy.yml
+      -- plugins
+           -- README.md
+      -- README.md
+      -- roles
+4 directories, 3 files
+
+# mkdir meta
+# vim meta/runtime.yml
+---
+requires_ansible: '>=2.9.0'
+
+# cd roles
+# pwd
+/home/student/EX374/custom-collection/rhel/user/roles
+# ansible-galaxy role init mymotd
+- Role mymotd was created successfully
+# tree mymotd
+mymotd/
+  -- defaults
+      -- main.yml
+  -- files
+  -- handlers
+     -- main.yml
+  -- meta
+      -- main.yml
+  -- README.md
+  -- tasks
+     -- main.yml
+  -- templates
+  -- tests
+     -- inventory
+     -- test.yml
+  -- vars
+     -- main.yml
+
+8 directories, 8 files
+
+
+# cd /home/student/EX374
+# ls copy.yml 
+# ls files/motd.txt
+# vim copy.yml
+---
+# tasks file for mymotd
+- name: configure banner /etc/motd on target server
+    ansible.builtin.template:
+      src: files/motd.txt
+      dest: /etc/motd
+      owner: root
+      group: root
+      mode: 644
+# vim files/motd.txt
+welcome to {{ ansible_hostname }}
+Managed by ansible on {{ ansible_date_time.date }}
+
+
+# cp copy.yml custom-collection/rhel/user/roles/mymotd/tasks/main.yml
+# cp conf custom-collection/rhel/user/roles/mymotd/files/
+# ls -ld custom-collection/rhel/user/roles/mymotd/tasks/main.yml
+
+# ls -dl custom-collection/rhel/user/roles/mymotd/files/motd.txt
+
+# cd /home/student/EX374/custom-collection/rhel/user
+
+delete the files that are not needed to included in the build
+
+# rm -rfv docs roles/mymotd/{defaults,templates,handlers,tests,vars}
+
+# ansible-galaxy collection build
+- Created collection for rhel.user at /home/student/custom-collection/rhel/user/rhel-user-1.0.0.tar.gz
+# ls
+docs galaxy.yml meta plugins README.md rhel-user-1.0.0.tar.gz roles
+#
+
+# cd /home/student/EX374/custom-collection
+# pwd
+/home/student/EX374/custom-collection
+# vim ansible.cfg
+[defaults]
+inventory=inventory
+
+[galaxy]
+server_list = published_repo
+[galaxy_server.published_repo]
+url=https://hub.lab.example.com/api/galaxy/content/published/
+token=bfc321342281a83984357280klksjfi9023jsjdf
+
+# podman login -u student -p redhat123 hub.lab.exmaple.com
+# podman images
+You can remove the existing images if required using below command
+# podman rmi <IMAGE ID>
+
+Command to publish: 
+# ansible-galaxy collection publish -v rhel-user-1.0.0.tar.gz
+ Approve after publish.
+
+===========================================
+Publish custom collection using GUI
+
+now copy this tar.gz file to desktop
+
+From desktop
+
+student@Desktop /home/student # scp -p student@control:/home/student/EX374/custom-collection/rhel/user/rhel-user-1.0.0.tar.gz /home/student/
+
+# ls -dl /home/student/rhel-user-1.0.0.tar.gz
+
+Once copied to local desktop in the exam, upload this collection to private automation hub by accessing the private automation hub from chrome/firefox browser from desktop. (in the exam, control machine does not have the GUI)
+===========================================
+
+
+
+
+

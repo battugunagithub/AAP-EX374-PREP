@@ -1,0 +1,86 @@
+Q14. Run playbook. 
+	Clone project from git url. 
+	Copy a file to /var/www/html/. 
+	Dynamic inventory and config file available. 
+
+Ans:- 
+	Clone the git project into git-repos directory. 
+	Provide execute permission to dynamic inventory. 
+	Create playbook and add copy task on it and execute. 
+=============================================================
+
+
+# mkdir -p EX374/dynamic-inventory-playbook
+# cd EX374/dynamic-inventory-playbook
+# ls
+inventory
+# chmod +x inventory/inventory*.py
+# ls -ltr inventory
+-rwx-rwx-r-x    inventory/inventorya.py
+-rwx-rwx-r-x    inventory/inventory.py
+# vim inventory/inventorya.py
+# cat inventory/inventorya.py
+
+# vim ansible.cfg
+[defaults]
+remote_user=student
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+#
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  execution-environment:
+    image: hub.lab.example.com/custom-ee-python:1.0
+    pull:
+      policy: missing
+  mode: stdout
+  logging:
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+#
+# podman login hub.lab.example.com -u student -p redhat123
+# ansible-navigator inventory -i inventory/inventorya.py --graph
+@all:
+  |--@testing:
+  |  |--servera.lab.example.com
+  |--@ungrouped:
+
+#
+# ansible-navigator inventory -i inventory/inventorya.py --graph testing
+@testing:
+  |--servera.lab.example.com
+# 
+# vim copy-playbook.yml
+# cat copy-playbook.yml
+---
+- name: copy playbook with dynamic inventory
+  hosts: servera.example.com
+  become: true
+  tasks:
+    - name: copy file to testing server
+      ansible.builtin.copy:
+        content: "content from copy playbook"
+        dest: /tmp/copy-file.txt
+#
+# 
+# ansible-navigator run copy-playbook.yml -i inventory/inventorya.py --syntax-check 
+
+playbook: /home/student/EX374/dynamic-inventory-playbook.yml
+#
+
+# ansible-navigator run copy-playbook.yml -i inventory/inventorya.py --check -v
+
+# ansible-navigator run copy-playbook.yml -i inventory/inventorya.py -v
+
+once syntax check and dry run is successful, actual run also gets successful. 
+
+# ssh servera "cat /tmp/copy-file.txt
+content from copy playbook
+#
+ 

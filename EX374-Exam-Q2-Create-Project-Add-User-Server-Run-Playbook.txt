@@ -1,0 +1,94 @@
+Q2. create a project user_project from http://git.lab.example.com:8081/git/user-project.git .
+playbook created there name create_user.yml with some task.users will create from a file user_list.yml where some user names are there with a group.
+Add greg user to a group developer.add node3 to a group prod inside the inventory and run the playbook.
+after done push to git remote repo.
+
+# vi ~/.vimrc
+set ai cuc ts=2
+# source ~/.vimrc
+# rpm -q ansible-navigator
+# sudo yum install ansible-navigator -y
+# mkdir create_project
+# cd create_project
+# vim inventory
+[lb_servers]
+servera.lab.example.com
+[prod]
+serverb.lab.example.com
+#
+# vim user_list.yml
+---
+developer:
+  - steve
+  - tony
+  - vision
+  - mark
+#
+
+Update inventory and user_list.yml as mentioned in the question
+
+# vim inventory
+[lb_servers]
+servera.lab.example.com
+[prod]
+serverb.lab.example.com
+serverc.lab.example.com
+#
+# vim user_list.yml
+---
+developer:
+  - steve
+  - tony
+  - vision
+  - mark
+  - greg
+#
+# vim ansible-navigator.yml
+---
+ansible-navigator:
+  execution--environment:
+    image: hub.lab.example.com/ee-supported-rhel8:latest
+    pull:
+      policy: missing
+  mode: stdout
+  logging:
+    file: /dev/null
+  playbook-artifact:
+    enable: false
+# vim ansible.cfg
+[defaults]
+inventory=inventory
+remote_user=student
+
+[privilege_escalation]
+become=true
+become_user=root
+become_method=sudo
+become_ask_pass=false
+#
+
+# vim create_user.yml
+---
+- name: create users from user list file
+  hosts: prod
+  vars_files:
+    - user_list.yml
+  tasks:
+    - name: creating users
+      ansible.builtin.user:
+        name: "{{item}}"
+        state: present
+      loop: "{{developer}}"
+# podman login hub.lab.example.com -u student -p redhat123
+#
+# ansible-navigator run create_user.yml --syntax-check
+# ansible-navigator run create_user.yml --check 
+# ansible-navigator run create_user.yml -v
+#
+
+# ssh serverb.lab.example.com
+# id greg; id steve
+# exit
+
+# ssh serverc.lab.example.com "id greg;id steve"
+#        

@@ -1,0 +1,17 @@
+a.  Clone project from git to /home/matthew directory.
+b.  Provide execute permission to dynamic inventory script.
+c.  Check custom execution-environment defined in  ansible-navigator.yml file.
+   ---
+ansible-navigator:
+ ansible: 
+  config: ./ansible.cfg 
+ execution-environment:
+    image: ee-ansible-user:v1.0 
+    pull-policy: missing 
+d.  Create playbook with below role defined
+--- 
+- name: Test newuser role from rhel.user  collection 
+hosts: all 
+roles:
+ - name: rhel.user.newuser
+       	e. Push to git server.

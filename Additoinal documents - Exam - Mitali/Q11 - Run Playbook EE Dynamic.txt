@@ -1,0 +1,17 @@
+a.  Clone the git project in /home/matthew directory.
+b.  Provide execute permission to dynamic inventory.
+   Chmod a+x ldap-free-ipa.py
+ansible-navigator inventory -m stdout -i inventory/ldap-free-ipa.py --graph web
+c.  Create playbook main.yml and add copy task on it.
+vim main.yml
+hosts: hostfrom the inv command above
+become: yes
+tasks:
+	ansible.builtin.copy:
+		content: “sun blah”
+		dest: /etc/motd.d/banner
+
+d.  Create a script file named main.sh
+e.  Add below command inside the script file and execute,
+ansible-navigator run main.yml –i inventory –eei ee-dynamic-rhel8:v1.0 -–pp missing –m stdout
+f.  Push to git server.

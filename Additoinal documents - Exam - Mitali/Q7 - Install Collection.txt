@@ -1,0 +1,14 @@
+a.  Navigate to https://hub.lab17.example.com and then log in with student as your username and redhat123 as your password.
+b.  Browse the Ansible Content Collections that are available on the Collections page accessible from Collections > Collections.
+c.  #Mkdir /home/student/mycollections 
+d.  From the private automation hub's web UI, navigate to Collections > Repository Management. This page has the parameters that you need for configuring the ansible.cfg file.
+e.  #Cat ansible.cfg
+[defaults]
+collections_paths = ./mycollections:/usr/share/ansible/collections
+[galaxy]
+server_list = published_repo
+[galaxy_server.published_repo]
+url=https://hub.lab17.example.com/api/galaxy/content/published/
+token=<put your token here>
+f.  #ansible-galaxy collection install example.collection
+g.  #ansible-galaxy collection list

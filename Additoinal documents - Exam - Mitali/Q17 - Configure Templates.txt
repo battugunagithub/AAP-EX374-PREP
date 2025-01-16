@@ -1,0 +1,23 @@
+Create the following Ansible automation controller job template:
+
+-	Template EX374 static copy project template
+-	When launched the template runs the playbook master_playbook.yml in project EX374 copy file project against hosts in EX374 static inventory.
+
+-	Set the following variables in template EX374 static copy project template.
+—
+Directory: “/etc/motd.d”
+File: “todays_message”
+Content: “The sun goes down, and then the moon comes up”
+
+-	Template EX374 dynamic copy project template
+-	When launched the template runs the playbook master_playbook.yml in project EX374 copy file project against hosts in EX374 dynamic inventory.
+
+-	Set the following variables in template EX374 dynamic copy project template
+—
+Directory: “etc/issue.d”
+File: “todays_issue”
+Content: “After the moon goes down, the sun comes up”
+
+-	Template EX374 user project template 
+-	When launched the template runs the playbook main.yml in project EX374 user project against hosts in inventory EX374 static inventory
+-	The template uses the EX374 custom user execution environment.

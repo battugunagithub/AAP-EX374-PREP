@@ -1,0 +1,75 @@
+Q10. Create a custom execution environment with python package.
+a.
+Python=3 and python-ldap=3 must be in that eei.#425
+b.
+Base image -:
+c.
+Build image :-
+d.
+Publish to private hub.
+
+# mkdir custom-ee-python
+
+# cd custom-ee-python
+
+# vim execution-environment.yml
+---
+version: 1
+build_arg_defaults:
+  EE_BASE_IMAGE: hub.lab.example.com/ee-supported-rhel8:latest
+  EE_BUILDER_IMAGE: hub.lab.example.com/ansible-builder-rhel8:latest
+dependencies:
+  system: bindep.txt
+
+
+# vim bindep.txt
+python36
+python3-ldap
+
+# ls
+bindep.txt
+execution-environment.yml
+
+# ansible-builder build -t hub.lab.example.com/custom-ee-python:v1.0
+
+Running command:
+  podman build -f context/Containerfile -t hub.lab.example.com/custom-ee-python:v1.0 context
+Complete! The build context can be found at: /home/student/EX374/custom-ee-python/context
+
+# podman images
+REPOSITORY				TAG
+hub.lab.example.com/custom-ee-python	v1.0
+
+# podman push hub.lab.example.com/custom-ee-python:v1.0
+#
+
+
+After pushing the image to private automation hub, verify it by refreshing the “execution environments” page in private automation hub.
+
+
+
+In order to validate the python and OS packages in the image, you can use ansible-navigator command as below and selecting the menu driven options
+
+From first screen
+:images
+
+shows the images available 
+1 custom-ee-python
+
+:1 
+
+4 Operating system packages
+
+:4
+
+:f python36
+python3.6
+python3-ldap
+
+esc to go back or type :q to exit from the complete menu
+
+
+# ansible-navigator --eei hub.lab.example.com/custom-ee-python:v1.0 --pp missing
+
+
+
